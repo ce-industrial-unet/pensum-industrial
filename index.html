@@ -80,7 +80,7 @@ button{font:inherit;color:inherit}
 
 /* Pestañas */
 .tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:linear-gradient(var(--bg) 82%,rgba(13,16,19,0));padding-block:10px 12px}
-.seg{display:grid;grid-template-columns:repeat(3,1fr);background:#171B1F;border:1px solid #2E363B;border-radius:6px;padding:4px;gap:4px}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);background:#171B1F;border:1px solid #2E363B;border-radius:6px;padding:4px;gap:4px}
 .seg button{border:0;background:transparent;border-radius:4px;padding:9px 4px;font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.3px;line-height:1.1;text-transform:uppercase;cursor:pointer;color:var(--muted)}
 .seg button[aria-selected="true"]{background:var(--teal);color:var(--on-teal)}
 
@@ -230,6 +230,52 @@ button{font:inherit;color:inherit}
 .eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:5px;border:0;background:transparent;color:var(--teal);font-size:13px;font-weight:600;padding:8px;cursor:pointer}
 .eye[aria-pressed="false"] .slash{display:none}
 .link{border:0;background:none;color:var(--blue);font-size:13px;padding:10px 0 0;cursor:pointer;text-decoration:underline}
+/* Notas: calculadora de cuánto me falta (escala UNET 1–100 a 1–9) */
+.grows{display:grid;gap:8px;margin-top:12px}
+.gcount{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:13.5px;color:var(--muted)}
+.gcn{display:flex;gap:6px}
+.gcn button{width:40px;height:38px;border-radius:4px;border:1px solid var(--line-strong);background:var(--steel-2);color:var(--ink);font-family:var(--f-display);font-size:19px;font-weight:800;cursor:pointer}
+.gcn button[aria-pressed="true"]{background:var(--teal);color:var(--on-teal);border-color:var(--teal)}
+.grow{display:grid;grid-template-columns:minmax(0,1fr) 74px 70px 38px 30px;gap:6px;align-items:center}
+.grow input{width:100%;min-width:0;font:inherit;font-size:16px;padding:9px 8px;border-radius:4px;border:1px solid var(--line-strong);background:var(--sunk);color:var(--ink)}
+.grow .gl{font-size:14px}
+.gp{position:relative;display:block}
+.gp input{padding-right:20px}
+.gp span{position:absolute;right:8px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+.gn{text-align:center;font-family:var(--f-mono)}
+.gc{font-family:var(--f-mono);font-size:13px;color:var(--brass);text-align:center}
+.gx{width:30px;height:30px;border-radius:4px;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:18px;line-height:1;cursor:pointer}
+.gsum{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.goals{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.goals button{display:grid;place-items:center;border:1px solid var(--line-strong);background:var(--steel-2);color:var(--ink);border-radius:4px;padding:8px 0;font-family:var(--f-display);font-size:24px;font-weight:800;cursor:pointer;line-height:1.1}
+.goals button small{font-family:var(--f-body);font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.goals button[aria-pressed="true"]{background:var(--teal);color:var(--on-teal);border-color:var(--teal)}
+.goals button[aria-pressed="true"] small{color:var(--on-teal)}
+.gacc{display:flex;align-items:baseline;gap:8px;color:var(--muted);font-size:13px}
+.gacc strong{font-family:var(--f-display);font-size:34px;font-weight:800;color:var(--ink)}
+.gbar{position:relative;height:12px;border-radius:2px;background:repeating-linear-gradient(-45deg,#1B2125 0 6px,#232A2F 6px 12px);border:1px solid #343D43;margin:10px 0 14px}
+.gbar i{position:absolute;inset:0 auto 0 0;background:var(--teal)}
+.gbar b{position:absolute;top:-5px;bottom:-5px;width:3px;background:var(--yellow);transform:translateX(-1.5px)}
+.gbar b.mx{background:var(--blue);width:2px}
+.gbig{position:relative;overflow:hidden;border-radius:6px;padding:16px 14px 14px;background:var(--blue-soft);border:1px solid rgba(126,174,255,.4);display:grid;gap:2px;text-align:center}
+.gbig span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-family:var(--f-mono)}
+.gbig strong{font-family:var(--f-display);font-size:50px;font-weight:800;line-height:1.05;color:var(--blue)}
+.gbig strong small{font-size:18px;color:var(--muted)}
+.gbig em{font-style:normal;font-size:13px;color:var(--ink)}
+.gbig.ok{background:var(--teal-soft);border-color:rgba(31,181,204,.45)} .gbig.ok strong{color:var(--teal)}
+.gbig.bad{background:var(--orange-soft);border-color:rgba(255,122,61,.45)} .gbig.bad strong{color:var(--orange)}
+.gbig.bad::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:var(--hazard)}
+.gtable{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px}
+.gtable div{display:grid;place-items:center;border:1px solid var(--line);border-radius:4px;padding:6px 0;background:var(--sunk)}
+.gtable div.on{border-color:var(--teal);box-shadow:inset 0 -3px 0 var(--teal)}
+.gtable span{font-size:11px;color:var(--muted);font-family:var(--f-mono)}
+.gtable b{font-family:var(--f-display);font-size:21px;font-weight:800}
+.gmsg.wn{color:var(--orange);font-size:14px;margin:4px 0 0}
+.conv{align-items:center}
+.conv input{max-width:150px;font-size:16px}
+.cvarrow{color:var(--muted);font-size:18px}
+.conv output{font-family:var(--f-display);font-size:30px;font-weight:800;color:var(--teal);min-width:44px;text-align:center}
+@media (max-width:380px){.grow{grid-template-columns:minmax(0,1fr) 64px 60px 34px 28px}.seg button{font-size:13.5px}}
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
 @media (max-width:380px){.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:1/-1}.brand h1{font-size:24px}.top .lc{height:44px}}
 </style>
@@ -258,8 +304,9 @@ button{font:inherit;color:inherit}
   <nav class="tabs" aria-label="Secciones">
     <div class="seg" role="tablist">
       <button role="tab" id="t-materias" aria-selected="true">Materias</button>
-      <button role="tab" id="t-inscribir" aria-selected="false">Qué inscribir</button>
+      <button role="tab" id="t-inscribir" aria-selected="false">Inscribir</button>
       <button role="tab" id="t-plan" aria-selected="false">Mi plan</button>
+      <button role="tab" id="t-notas" aria-selected="false">Notas</button>
     </div>
   </nav>
 
@@ -301,13 +348,32 @@ button{font:inherit;color:inherit}
       </div>
       <p class="note">Las prelaciones salen del pensum oficial. La oferta, los cupos, el máximo de U.C. y los permisos especiales los confirmas en Control de Estudios.</p>
     </section>
+    <section id="v-notas" hidden>
+      <div class="card">
+        <h3>¿Cuánto me falta?</h3>
+        <p class="note" style="margin-top:-4px">Pon el porcentaje y la nota (1 a 100) de cada parcial. Deja en blanco la nota de los parciales que todavía no presentas.</p>
+        <div class="gcount"><span>¿Cuántos parciales tiene?</span><div class="gcn" id="gCount" role="group" aria-label="Cantidad de evaluaciones"></div></div>
+        <div id="gRows" class="grows"></div>
+        <div class="inrow" style="margin-top:10px"><button class="btn sec" id="gAdd">+ Agregar parcial</button><button class="ghost" id="gReset" style="margin-left:auto">Reiniciar</button></div>
+        <div class="gsum" id="gSum"></div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:17px">Meta de nota definitiva</h3>
+        <div class="goals" id="gGoals" role="group" aria-label="Meta"></div>
+      </div>
+      <div class="card gres" id="gRes"></div>
+      <div class="card">
+        <h3 style="font-size:17px">Convertir una nota</h3>
+        <div class="inrow conv"><input id="cvIn" type="number" inputmode="numeric" min="1" max="100" placeholder="Nota de 1 a 100" aria-label="Nota de 1 a 100"><span class="cvarrow">→</span><output id="cvOut">–</output><span class="note" style="margin:0">de 9</span></div>
+      </div>
+    </section>
     <section id="v-plan" hidden>
       <div class="card"><h3 id="planTitle">Tu ruta hasta el grado</h3>
-        <p class="note" style="margin:0">Calculado con los límites de semestre regular de “Qué inscribir”, suponiendo que apruebas todo y que te ofertan todas las materias.</p></div>
+        <p class="note" style="margin:0">Calculado con los límites de semestre regular de “Inscribir”, suponiendo que apruebas todo y que te ofertan todas las materias.</p></div>
       <div class="plan" id="planList"></div>
     </section>
 
-    <section class="tools" aria-label="Herramientas">
+    <section class="tools" id="tools" aria-label="Herramientas">
       <h2 style="font-family:var(--f-display);font-size:20px;margin:22px 0 0">Herramientas</h2>
       <div class="card">
         <h3 style="font-size:17px">Marcar rápido</h3>
@@ -419,16 +485,17 @@ const LS = "pensumIndustrialUNET.v1";
 let MARK = "a";   // qué marca un toque: "a" aprobada, "e" inscrita
 const plusE = () => new Set([...S.a, ...S.e]);
 const DEF_LIM = {sem:{uc:20,n:10}, int:{uc:8,n:2}};
-let S = {a:new Set(), e:new Set(), x:new Set(), mode:"sem", lim:JSON.parse(JSON.stringify(DEF_LIM)), t:0};
+let S = {a:new Set(), e:new Set(), x:new Set(), g:{}, gk:"libre", mode:"sem", lim:JSON.parse(JSON.stringify(DEF_LIM)), t:0};
 function loadLocal(){ try{ const r = JSON.parse(localStorage.getItem(LS)||"null"); if(r) applyRaw(r); }catch(e){} }
 function applyRaw(r){
   S.a = new Set((r.a||[]).filter(k=>BY[k])); S.x = new Set((r.x||[]).filter(k=>BY[k]));
   S.e = new Set((r.e||[]).filter(k=>BY[k] && !S.a.has(k)));
+  S.g = (r.g && typeof r.g === "object") ? r.g : {}; S.gk = typeof r.gk === "string" ? r.gk : "libre";
   S.mode = r.mode==="int"?"int":"sem";
   if (r.lim && r.lim.sem && r.lim.int) S.lim = {sem:{uc:+r.lim.sem.uc||20,n:+r.lim.sem.n||10}, int:{uc:+r.lim.int.uc||8,n:+r.lim.int.n||2}};
   S.t = r.t||0;
 }
-const raw = () => ({a:[...S.a], e:[...S.e], x:[...S.x], mode:S.mode, lim:S.lim, t:S.t});
+const raw = () => ({a:[...S.a], e:[...S.e], x:[...S.x], g:S.g, gk:S.gk, mode:S.mode, lim:S.lim, t:S.t});
 let dbRef = null, dbBusy = Promise.resolve(), dbTimer = null;
 function save(){
   S.t = Date.now();
@@ -490,6 +557,73 @@ function projection(){
   }
   const doneCore = CORE.every(c => A.has(c.key)), doneE = electCount(A,extra) >= ELECT_NEEDED;
   return {sems:out, complete: doneCore && doneE, A, extra};
+}
+
+// ---------- Calculadora de notas ----------
+const CONV = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0, 3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4.0, 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.0, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 7.0, 7.0, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 8.0, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.8, 8.9, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0];   // nota 1–100 → escala UNET 1–9
+const conv = n => { n = Math.round(+n); return n < 1 ? 1 : n > 100 ? 9 : CONV[n-1]; };
+const EPS = 1e-9;
+const num = v => v === "" || v === null || v === undefined || isNaN(+v) ? null : +v;
+const defEvals = () => [1,2,3,4].map(i => ({l:"Parcial " + i, p:25, n:""}));
+function evalsOf(k){ if (!S.g[k]) S.g[k] = {ev:defEvals(), goal:5}; return S.g[k]; }
+function gradeCalc(ev, goal){
+  const valid = ev.filter(e => num(e.p) > 0);
+  const sumP = valid.reduce((t,e) => t + num(e.p), 0);
+  const done = valid.filter(e => num(e.n) !== null), pend = valid.filter(e => num(e.n) === null);
+  const doneP = done.reduce((t,e) => t + num(e.p), 0), pendP = pend.reduce((t,e) => t + num(e.p), 0);
+  const acc = done.reduce((t,e) => t + num(e.p)/100 * conv(e.n), 0);
+  const need = g => { if (acc >= g - 0.5 - EPS) return 0;
+    if (pendP <= 0) return null;
+    for (let x = 1; x <= 100; x++) if (acc + conv(x) * pendP/100 >= g - 0.5 - EPS) return x;
+    return null; };
+  const maxFinal = Math.min(9, Math.max(1, Math.floor(acc + 9*pendP/100 + 0.5 + EPS)));
+  const finalNow = Math.min(9, Math.max(1, Math.floor(acc + 0.5 + EPS)));
+  return {sumP, doneP, pendP, acc, need, maxFinal, finalNow, nPend:pend.length, nDone:done.length};
+}
+function matOptions(){
+  const ins = [...S.e].map(k=>BY[k]).filter(c=>c && c.uc>0);
+  const rest = [...CORE, ...ELECT].filter(c => c.uc>0 && !S.e.has(c.key) && !S.a.has(c.key));
+  return `<option value="libre">Cálculo libre (sin materia)</option>` +
+    (ins.length ? `<optgroup label="Inscritas este semestre">${ins.map(c=>`<option value="${c.key}">${c.name}</option>`).join("")}</optgroup>` : "") +
+    `<optgroup label="Otras materias">${rest.map(c=>`<option value="${c.key}">${c.name}</option>`).join("")}</optgroup>`;
+}
+function renderNotas(){
+  S.gk = "libre";
+  const G = evalsOf(S.gk);
+  $("gRows").innerHTML = G.ev.map((e,i) => `<div class="grow" data-i="${i}">
+      <input class="gl" data-f="l" value="${String(e.l).replace(/"/g,"&quot;")}" aria-label="Nombre de la evaluación" placeholder="Parcial ${i+1}">
+      <label class="gp"><input data-f="p" type="number" inputmode="decimal" min="0" max="100" value="${e.p}" aria-label="Porcentaje"><span>%</span></label>
+      <input class="gn" data-f="n" type="number" inputmode="numeric" min="1" max="100" value="${e.n}" placeholder="Nota" aria-label="Nota de 1 a 100">
+      <output class="gc">${num(e.n)!==null ? conv(e.n).toFixed(1) : "–"}</output>
+      <button class="gx" data-del="${i}" aria-label="Quitar evaluación">×</button></div>`).join("");
+  $("gCount").innerHTML = [2,3,4,5,6].map(n => `<button data-count="${n}" aria-pressed="${G.ev.length===n}">${n}</button>`).join("");
+  $("gGoals").innerHTML = [5,6,7,8,9].map(g => `<button data-goal="${g}" aria-pressed="${G.goal===g}">${g}${g===5?"<small>Aprobar</small>":""}</button>`).join("");
+  renderGradeResult();
+}
+function renderGradeResult(){
+  const G = evalsOf(S.gk), r = gradeCalc(G.ev, G.goal);
+  const okSum = Math.abs(r.sumP - 100) < 0.01;
+  $("gSum").innerHTML = `<span class="${okSum?"st ok":"st wn"}">Porcentajes: ${+r.sumP.toFixed(2)}%${okSum?"":" · deben sumar 100%"}</span>
+    <span class="st lk">Evaluado: ${+r.doneP.toFixed(2)}%</span><span class="st lk">Falta: ${+r.pendP.toFixed(2)}%</span>`;
+  const accTxt = r.acc.toFixed(2).replace(".", ",");
+  const bar = `<div class="gbar" aria-hidden="true"><i style="width:${Math.min(100, r.acc/9*100)}%"></i><b style="left:${4.5/9*100}%"></b><b class="mx" style="left:${Math.min(100,(r.acc+9*r.pendP/100)/9*100)}%"></b></div>`;
+  let h = `<div class="gacc"><span>Llevas acumulado</span><strong>${accTxt}</strong><span>de 9</span></div>${bar}`;
+  if (!okSum){
+    h += `<p class="gmsg wn">Revisa los porcentajes: suman ${+r.sumP.toFixed(2)}% y deben sumar 100%.</p>`;
+  } else if (r.pendP <= 0){
+    const ap = r.finalNow >= 5;
+    h += `<div class="gbig ${ap?"ok":"bad"}"><span>Nota definitiva</span><strong>${r.finalNow}</strong><em>${accTxt} redondeado · ${ap?"Aprobada 🎉":"Reprobada"}</em></div>`;
+  } else {
+    const n = r.need(G.goal);
+    const cada = r.nPend > 1 ? ` en cada uno de los ${r.nPend} parciales que faltan` : " en el parcial que falta";
+    if (n === 0) h += `<div class="gbig ok"><span>Meta: ${G.goal}</span><strong>¡Ya la tienes!</strong><em>Con lo que llevas ya alcanzas ${G.goal} de definitiva, aunque saques 1 en lo que falta.</em></div>`;
+    else if (n === null) h += `<div class="gbig bad"><span>Meta: ${G.goal}</span><strong>No alcanza</strong><em>Aunque saques 100${cada}, lo máximo que puedes tener es ${r.maxFinal}.</em></div>`;
+    else h += `<div class="gbig"><span>Para tener ${G.goal} necesitas</span><strong>${n}<small>/100</small></strong><em>${cada.trim().replace(/^en/,"En")} (${+r.pendP.toFixed(2)}% de la nota). Equivale a ${conv(n).toFixed(1).replace(".",",")} de 9.</em></div>`;
+    h += `<div class="gtable">${[5,6,7,8,9].map(g => { const x = r.need(g);
+        return `<div class="${g===G.goal?"on":""}"><span>${g}</span><b>${x===0?"✓":x===null?"✗":x}</b></div>`; }).join("")}</div>
+      <p class="note" style="margin:6px 0 0">Nota mínima de 1 a 100 que necesitas${r.nPend>1?" en cada parcial pendiente":""} para cada definitiva. ✓ ya la tienes · ✗ no alcanza.</p>`;
+  }
+  $("gRes").innerHTML = h;
 }
 
 // ---------- render ----------
@@ -627,7 +761,7 @@ function renderSummary(uc){
 }
 function render(){
   const uc = ucOf(S.a);
-  renderSummary(uc); renderMaterias(uc); renderInscribir(); renderPlan();
+  renderSummary(uc); renderMaterias(uc); renderInscribir(); renderPlan(); renderNotas();
   $("bkCode").textContent = encode();
 }
 
@@ -656,6 +790,24 @@ $("semList").addEventListener("click", e => {
   const b = e.target.closest(".all"); if (b){ const s = +b.dataset.sem, on = b.dataset.on==="1";
     CORE.filter(c=>c.sem===s).forEach(c => { if (on){ S.a.add(c.key); S.e.delete(c.key); } else S.a.delete(c.key); }); save(); render(); }
 });
+$("gRows").addEventListener("input", e => {
+  const row = e.target.closest(".grow"); if (!row) return;
+  const G = evalsOf(S.gk), i = +row.dataset.i, f = e.target.dataset.f; if (!f) return;
+  G.ev[i][f] = e.target.value;
+  if (f === "n") row.querySelector(".gc").textContent = num(e.target.value)!==null ? conv(e.target.value).toFixed(1) : "–";
+  save(); renderGradeResult();
+});
+$("gRows").addEventListener("click", e => { const d = e.target.closest("[data-del]"); if (!d) return;
+  const G = evalsOf(S.gk); G.ev.splice(+d.dataset.del, 1); if (!G.ev.length) G.ev.push({l:"Parcial 1", p:100, n:""}); save(); renderNotas(); });
+$("gAdd").onclick = () => { const G = evalsOf(S.gk); if (G.ev.length >= 12) return; G.ev.push({l:"Parcial " + (G.ev.length+1), p:"", n:""}); save(); renderNotas();
+  const ins = $("gRows").querySelectorAll('input[data-f="p"]'); ins[ins.length-1].focus(); };
+$("gReset").onclick = () => { S.g[S.gk] = {ev:defEvals(), goal:5}; save(); renderNotas(); };
+$("gCount").addEventListener("click", e => { const b = e.target.closest("[data-count]"); if (!b) return;
+  const n = +b.dataset.count, G = evalsOf(S.gk), base = Math.floor(100/n), extra = 100 - base*n;
+  G.ev = Array.from({length:n}, (_,i) => ({l: (G.ev[i] && G.ev[i].l) || ("Parcial " + (i+1)), p: base + (i >= n - extra ? 1 : 0), n: G.ev[i] ? G.ev[i].n : ""}));
+  save(); renderNotas(); });
+$("gGoals").addEventListener("click", e => { const b = e.target.closest("[data-goal]"); if (!b) return; evalsOf(S.gk).goal = +b.dataset.goal; save(); renderNotas(); });
+$("cvIn").addEventListener("input", e => { const v = num(e.target.value); $("cvOut").textContent = v===null ? "–" : conv(v).toFixed(1).replace(".",","); });
 $("mkA").onclick = () => setMark("a"); $("mkE").onclick = () => setMark("e");
 $("finSem").onclick = () => { if (!S.e.size){ $("finMsg").className="msg bad"; $("finMsg").textContent="No tienes materias marcadas como inscritas."; return; }
   const n = S.e.size; S.e.forEach(k=>S.a.add(k)); S.e = new Set(); save(); render();
@@ -674,9 +826,10 @@ const bump = (f,d,min,max) => () => { const L = S.lim[S.mode]; L[f] = Math.max(m
 $("ucMinus").onclick = bump("uc",-1,1,30); $("ucPlus").onclick = bump("uc",1,1,30);
 $("nMinus").onclick = bump("n",-1,1,12); $("nPlus").onclick = bump("n",1,1,12);
 
-const TABS = ["materias","inscribir","plan"];
+const TABS = ["materias","inscribir","plan","notas"];
 function show(t){ if (!TABS.includes(t)) t = "materias";
-  TABS.forEach(x => { $("v-"+x).hidden = x!==t; $("t-"+x).setAttribute("aria-selected", x===t); }); }
+  TABS.forEach(x => { $("v-"+x).hidden = x!==t; $("t-"+x).setAttribute("aria-selected", x===t); });
+  $("tools").hidden = t === "notas"; }
 TABS.forEach(t => $("t-"+t).onclick = () => { if (location.hash !== "#"+t) location.hash = t; else show(t); window.scrollTo({top:$("v-materias").parentElement.offsetTop-70, behavior:"smooth"}); });
 window.addEventListener("hashchange", () => show(location.hash.slice(1)));
 
@@ -796,7 +949,7 @@ loadLocal(); render(); show(location.hash.slice(1));
 })();
 
 if ("serviceWorker" in navigator && location.protocol === "https:") {
-  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js", {updateViaCache: "none"}).then(r => r.update()).catch(() => {}));
 }
 // Fondo: piso de planta (chapa diamantada), silueta de fábrica con techos en diente de sierra y chimeneas humeando, y una cinta transportadora con cajas
 (function(){

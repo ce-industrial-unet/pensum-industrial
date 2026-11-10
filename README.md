@@ -13,6 +13,10 @@ Centro de Estudiantes de Ingeniería Industrial (CEII) · Movimiento Estudiantil
 El progreso se guarda en el teléfono de cada estudiante y, si inicia sesión, también en la nube (Firebase).
 El *código de respaldo* sirve para pasarlo a otro dispositivo sin cuenta.
 
+## Créditos
+La tabla de conversión de notas (1–100 a 1–9) de la pestaña *Notas* es la misma que usa la app
+[CuantoMeFalta](https://github.com/JairoJs/CuantoMeFalta) de JairoJs.
+
 ## Actualizar
 Los datos del pensum están dentro de `index.html` (constante `DATA`). Si cambias archivos,
 sube también el número de `CACHE` en `sw.js` para que los teléfonos descarguen la versión nueva.
