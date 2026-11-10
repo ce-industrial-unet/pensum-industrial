@@ -44,7 +44,7 @@ html{background:var(--bg)}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.4;-webkit-text-size-adjust:100%}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 #bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:70px}
+.wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:160px}
 button{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -212,6 +212,8 @@ button{font:inherit;color:inherit}
 .msg.ok{color:var(--teal)} .msg.bad{color:var(--orange)}
 .foot{display:flex;align-items:center;justify-content:center;gap:14px;padding-block:24px 30px;color:var(--muted);font-size:12px;text-align:center;flex-wrap:wrap}
 .foot img{filter:var(--logo-filter);height:36px;width:auto;opacity:.9}
+.foot .credit{flex-basis:100%;margin:6px 0 0;padding-top:12px;border-top:1px dashed var(--line-strong);font-size:12px;color:var(--muted)}
+.foot .credit b{color:var(--ink);font-weight:600}
 .acrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .acrow .sync{flex:1;min-width:160px}
 .acrow .btn{padding:8px 12px;font-size:14px}
@@ -438,6 +440,7 @@ button{font:inherit;color:inherit}
 
   <footer class="foot">
     <img src="icons/logo-centro.png" alt=""><span>Centro de Estudiantes de Ingeniería Industrial<br>Movimiento Estudiantil Alpha</span><img src="icons/logo-alpha.png" alt="">
+    <p class="credit">Agradecimiento especial al <b>Centro de Estudiantes de Ingeniería Electrónica</b>, creadores de esta app web.</p>
   </footer>
 </div>
 
