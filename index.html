@@ -109,7 +109,13 @@ button{font:inherit;color:inherit}
 .row.enr .ck .gear{display:block;animation:spin 7s linear infinite}
 .row .tx{min-width:0;flex:1}
 .row .nm{font-weight:600;font-size:15px;line-height:1.25}
-.row[aria-pressed="true"] .nm{color:var(--muted)}
+/* Resaltador: al aprobarla, el nombre queda pintado como en el pensum impreso, un color por semestre */
+.row .nm .hl{border-radius:.45em .2em .55em .25em;padding:.05em .3em;margin:0 -.3em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.row[aria-pressed="true"] .nm .hl{color:#121416;background-repeat:no-repeat;background-size:100% 88%;background-position:0 75%;background-image:
+  linear-gradient(100deg,rgba(var(--hl),0) .6%,rgba(var(--hl),.96) 2.2%,rgba(var(--hl),.86) 7%,rgba(var(--hl),.84) 90%,rgba(var(--hl),.97) 96%,rgba(var(--hl),0) 99.4%),
+  linear-gradient(181deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.18) 12%,rgba(255,255,255,0) 30%)}
+.row.hl-in .nm .hl{animation:hlSweep .5s cubic-bezier(.3,.7,.4,1) both}
+@keyframes hlSweep{from{background-size:0% 88%;color:var(--ink)}to{background-size:100% 88%;color:#121416}}
 .row .sub{font-size:12.5px;color:var(--muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
 .code{font-family:var(--f-mono);font-size:11px;color:#7E8B92}
 .uc{flex:none;font-family:var(--f-mono);font-weight:500;font-size:12.5px;color:var(--brass);font-variant-numeric:tabular-nums}
@@ -502,11 +508,14 @@ function statusOf(c, uc){
   }
   return `<span class="st lk">Bloqueada</span><span>Falta: ${m.join(", ")}</span>`;
 }
+// Resaltadores: amarillo, verde, rosado, naranja y azul por semestre; lila para las electivas
+const HL = ["196,160,255","255,233,60","125,235,105","255,125,200","255,172,64","98,205,255"];
+let FRESH = null;   // la materia recién aprobada se "pinta" con una pasada de resaltador
 function row(c, uc){
-  const on = S.a.has(c.key);
-  return `<button class="row${S.e.has(c.key)?" enr":""}" data-k="${c.key}" aria-pressed="${on}">
+  const on = S.a.has(c.key), hl = HL[c.elective ? 0 : ((c.sem-1)%5)+1];
+  return `<button class="row${S.e.has(c.key)?" enr":""}${on&&c.key===FRESH?" hl-in":""}" data-k="${c.key}" aria-pressed="${on}" style="--hl:${hl}">
     <span class="ck">${CHECK}</span>
-    <span class="tx"><span class="nm">${c.name}</span>
+    <span class="tx"><span class="nm"><span class="hl">${c.name}</span></span>
       <span class="sub">${c.code?`<span class="code">${c.code}</span>`:""}${statusOf(c,uc)}</span></span>
     <span class="uc">${c.uc} U.C.</span></button>`;
 }
@@ -639,8 +648,8 @@ function decode(code){
 // ---------- eventos ----------
 function toggle(k){
   if (MARK==="e"){ if (S.e.has(k)) S.e.delete(k); else { S.e.add(k); S.a.delete(k); } }
-  else { if (S.a.has(k)) S.a.delete(k); else { S.a.add(k); S.e.delete(k); } }
-  save(); render(); }
+  else { if (S.a.has(k)) S.a.delete(k); else { S.a.add(k); S.e.delete(k); FRESH = k; } }
+  save(); render(); FRESH = null; }
 function setMark(m){ MARK = m; $("mkA").setAttribute("aria-pressed", m==="a"); $("mkE").setAttribute("aria-pressed", m==="e"); render(); }
 $("semList").addEventListener("click", e => {
   const r = e.target.closest(".row"); if (r) return toggle(r.dataset.k);
