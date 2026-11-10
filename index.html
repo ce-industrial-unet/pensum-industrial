@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Marca tus materias aprobadas de Ingeniería Industrial UNET y descubre qué inscribir según las prelaciones.">
+<meta name="theme-color" content="#03080B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pensum Ind">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>:root{color-scheme:dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Pensum Industrial UNET</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: app móvil de una columna (máx. 760px) sobre un plano técnico oscuro; engranajes turquesa que giran engranados en un canvas fijo detrás del contenido */
+:root{
+  --bg:#03080B; --board:#060D10; --surface:rgba(9,17,20,.86); --sunk:rgba(18,33,38,.75);
+  --ink:#E4F1F3; --muted:#869CA3; --line:rgba(52,190,232,.16); --line-strong:rgba(52,190,232,.38);
+  --trace:#34BEE8; --trace-dim:#1E748F; --copper:#D8AE57; --signal:#9CEBFF;
+  --accent:#34BEE8; --accent-soft:rgba(52,190,232,.12); --on-accent:#020F11;
+  --ok:#3DDC84; --ok-soft:rgba(61,220,132,.13); --av:#B9A4FF; --av-soft:rgba(185,164,255,.13);
+  --lock:#5D6D73; --warn:#F2B544; --warn-soft:rgba(242,181,68,.13);
+  --logo-filter:none;
+  --glow:0 0 12px rgba(52,190,232,.45);
+  --f-display:"Chakra Petch","Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Barlow",Arial,"Helvetica Neue",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.4;-webkit-text-size-adjust:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--trace);outline-offset:2px}
+
+/* Cabecera */
+.top{display:flex;align-items:center;gap:12px;padding-block:18px 8px}
+.top img{filter:var(--logo-filter);display:block}
+.top .lc{height:48px;width:auto}
+.top .la{height:38px;width:auto;margin-left:auto}
+.brand{min-width:0}
+.brand h1{font-family:var(--f-display);font-weight:700;font-size:25px;line-height:1;margin:0;letter-spacing:.5px;text-transform:uppercase;text-shadow:0 0 18px rgba(52,190,232,.35)}
+.brand h1 em{font-style:normal;color:var(--trace)}
+.brand p{margin:5px 0 0;font-family:var(--f-mono);font-size:10.5px;letter-spacing:1.2px;color:var(--muted);text-transform:uppercase}
+
+/* Panel tipo chip */
+.sum{position:relative;background:linear-gradient(180deg,rgba(12,24,28,.92),rgba(6,12,14,.92));border:1px solid var(--line-strong);border-radius:14px;padding:16px 16px 14px;margin-block:12px 4px;display:grid;gap:12px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.6),0 0 30px rgba(52,190,232,.06)}
+.sum::before,.sum::after{content:"";position:absolute;left:18px;right:18px;height:5px;background:repeating-linear-gradient(90deg,var(--copper) 0 2px,transparent 2px 11px);opacity:.55}
+.sum::before{top:-5px;border-radius:2px 2px 0 0}
+.sum::after{bottom:-5px;border-radius:0 0 2px 2px}
+.sum .big{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.sum .big b{font-family:var(--f-display);font-size:46px;line-height:1;color:var(--trace);text-shadow:var(--glow);font-variant-numeric:tabular-nums}
+.sum .big span{color:var(--muted);font-size:14px}
+.bar{height:8px;border-radius:4px;background:#0A1217;border:1px solid var(--line);overflow:hidden;display:flex}
+.bar i{display:block;height:100%;box-shadow:0 0 8px currentColor}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.stat{background:rgba(3,8,10,.7);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
+.stat b{display:block;font-family:var(--f-display);font-size:22px;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat span{font-size:11.5px;color:var(--muted)}
+.sync{font-family:var(--f-mono);font-size:10.5px;color:var(--muted);letter-spacing:.3px}
+
+/* Pestañas */
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:linear-gradient(var(--bg) 80%,rgba(3,5,6,0));padding-block:10px 12px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);background:rgba(9,17,20,.95);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+.seg button{border:0;background:transparent;border-radius:9px;padding:9px 4px;font-family:var(--f-display);font-weight:600;font-size:14px;letter-spacing:.3px;cursor:pointer;color:var(--muted)}
+.seg button[aria-selected="true"]{background:var(--accent-soft);color:var(--trace);box-shadow:inset 0 0 0 1px var(--line-strong),0 0 14px rgba(52,190,232,.15)}
+
+/* Semestres y filas */
+.sem{margin-block:16px}
+.semh{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.chip{flex:none;min-width:40px;height:28px;padding:0 8px;border-radius:6px;display:inline-grid;place-items:center;font-family:var(--f-display);font-weight:700;font-size:15px;box-shadow:0 0 10px rgba(0,0,0,.4)}
+.semh h2{font-family:var(--f-display);font-size:18px;margin:0;font-weight:700;letter-spacing:.3px}
+.semh .meta{font-family:var(--f-mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.semh .all,.ghost{margin-left:auto;border:1px solid var(--line-strong);background:rgba(9,17,20,.9);color:var(--trace);border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;backdrop-filter:blur(2px)}
+.row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:0;border-top:1px solid var(--line);background:transparent;padding:11px 14px;cursor:pointer;min-height:56px;transition:background .2s}
+.row:first-child{border-top:0}
+.row:hover{background:rgba(52,190,232,.04)}
+/* LED: apagado = pendiente, encendido = aprobada */
+.row .ck{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid #2C3C41;background:radial-gradient(circle at 35% 35%,#1A262A,#0A1012);display:grid;place-items:center;transition:all .2s}
+.row[aria-pressed="true"] .ck{border-color:#7DFFB9;background:radial-gradient(circle at 35% 35%,#D9FFEA,#34E88B 45%,#0F7A44);box-shadow:0 0 10px rgba(52,232,139,.85),0 0 22px rgba(52,232,139,.4)}
+.row .ck svg{display:none}
+.row .tx{min-width:0;flex:1}
+.row .nm{font-weight:600;font-size:15px;line-height:1.25}
+.row[aria-pressed="true"] .nm{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--trace-dim)}
+.row .sub{font-size:12.5px;color:var(--muted);margin-top:3px;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.code{font-family:var(--f-mono);font-size:11px;color:#6E838A}
+.uc{flex:none;font-family:var(--f-mono);font-weight:500;font-size:12.5px;color:var(--copper);font-variant-numeric:tabular-nums}
+.st{font-size:11px;font-weight:600;border-radius:4px;padding:1px 7px;letter-spacing:.2px}
+.st.ok{background:var(--ok-soft);color:var(--ok)}
+.st.av{background:var(--av-soft);color:var(--av)}
+.st.lk{background:rgba(93,109,115,.15);color:#8A9CA1}
+.st.wn{background:var(--warn-soft);color:var(--warn)}
+.note{font-size:12.5px;color:var(--muted);margin:8px 2px}
+.elh{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 2px 8px;font-size:14px;font-family:var(--f-display)}
+.elh span:last-child{font-family:var(--f-body);font-size:12.5px;color:var(--muted)}
+.opts div{margin-top:3px}
+.markbar{display:grid;gap:6px;margin:4px 2px 4px}
+.markbar>span{font-size:12.5px;color:var(--muted)}
+.marks{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:rgba(3,8,10,.8);border:1px solid var(--line);padding:4px;border-radius:12px}
+.marks button{display:flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:9px;padding:9px 6px;font-family:var(--f-display);font-weight:600;font-size:13.5px;background:transparent;color:var(--muted);cursor:pointer}
+.marks button[aria-pressed="true"]{background:rgba(255,255,255,.06);color:var(--ink);box-shadow:inset 0 0 0 1px var(--line-strong)}
+.led{flex:none;width:11px;height:11px;border-radius:50%}
+.led.g{background:radial-gradient(circle at 35% 35%,#D9FFEA,#34E88B 45%,#0F7A44);box-shadow:0 0 8px rgba(52,232,139,.8)}
+.led.r{background:radial-gradient(circle at 35% 35%,#FFD9DD,#FF4D5E 45%,#9A1525);box-shadow:0 0 8px rgba(255,77,94,.8)}
+.row.enr .ck{border-color:#FF8A95;background:radial-gradient(circle at 35% 35%,#FFE0E3,#FF4D5E 45%,#9A1525);box-shadow:0 0 10px rgba(255,77,94,.85),0 0 22px rgba(255,77,94,.35)}
+.st.en{background:rgba(255,77,94,.14);color:#FF7A86}
+.cursando{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#FF9AA3}
+.cursando i{width:9px;height:9px;border-radius:50%;background:#FF4D5E;box-shadow:0 0 8px rgba(255,77,94,.9)}
+.ps.cur{border-color:rgba(255,77,94,.4)}
+.ps.cur header{background:rgba(255,77,94,.1)}
+.opener{border:0;cursor:pointer;font:inherit;font-size:11px;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.opener .car{transition:transform .2s;display:inline-block}
+.opener[aria-expanded="true"] .car{transform:rotate(180deg)}
+.opener:hover{box-shadow:inset 0 0 0 1px currentColor}
+.opens{margin-top:10px;padding:10px 12px;border-radius:9px;background:rgba(185,164,255,.06);border:1px dashed rgba(185,164,255,.3);font-size:13px}
+.opens p{margin:0 0 6px;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px;font-family:var(--f-mono)}
+.opens p+div,.opens ul+p{margin-top:10px}
+.opens ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.opens li{display:flex;gap:8px;align-items:flex-start}
+.opens li b{font-weight:600}
+.opens li em{display:block;font-style:normal;font-size:12px;color:var(--muted)}
+.later{display:grid;gap:5px;color:var(--ink);font-size:12.5px;line-height:1.5}
+
+/* Recomendación */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-block:12px;backdrop-filter:blur(2px)}
+.card h3{font-family:var(--f-display);font-size:19px;margin:0 0 10px;letter-spacing:.3px}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:rgba(3,8,10,.8);border:1px solid var(--line);padding:4px;border-radius:12px}
+.modes button{border:0;border-radius:9px;padding:9px;font-family:var(--f-display);font-weight:600;background:transparent;color:var(--muted);cursor:pointer}
+.modes button[aria-pressed="true"]{background:var(--trace);color:var(--on-accent);box-shadow:var(--glow)}
+.limits{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.lim{background:rgba(3,8,10,.7);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.lim label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+.step{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.step button{width:36px;height:36px;border-radius:8px;border:1px solid var(--line-strong);background:#070F12;color:var(--trace);font-size:20px;font-weight:600;cursor:pointer;line-height:1}
+.step output{font-family:var(--f-display);font-size:24px;font-weight:700;color:var(--trace);font-variant-numeric:tabular-nums}
+.rec{display:grid;gap:8px;margin-top:4px}
+.ri{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-left:3px solid var(--trace);border-radius:10px;background:rgba(3,8,10,.75)}
+.ri .chip{height:26px;min-width:38px;font-size:13px}
+.ri .tx{flex:1;min-width:0}
+.why{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.opts{font-size:12.5px;color:var(--muted);margin-top:4px}
+.tot{display:flex;justify-content:space-between;align-items:baseline;margin-top:12px;padding-top:10px;border-top:1px dashed var(--line-strong);font-weight:600}
+.tot b{font-family:var(--f-display);font-size:24px;color:var(--trace);text-shadow:var(--glow)}
+.mini{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
+.mini:first-of-type{border-top:0}
+.mini .tx{flex:1;min-width:0;font-size:14px}
+.empty{color:var(--muted);font-size:14px;padding:6px 0}
+
+/* Plan */
+.plan{display:grid;gap:10px}
+.ps{border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.ps header{display:flex;justify-content:space-between;align-items:baseline;padding:10px 14px;background:rgba(52,190,232,.06);border-bottom:1px solid var(--line)}
+.ps header b{font-family:var(--f-display);font-size:17px}
+.ps header span{font-family:var(--f-mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.ps ul{list-style:none;margin:0;padding:6px 14px 10px}
+.ps li{display:flex;gap:8px;align-items:center;padding:4px 0;font-size:14px}
+.ps li i{flex:none;width:8px;height:8px;border-radius:50%;box-shadow:0 0 6px currentColor}
+.ps li span{flex:1;min-width:0}
+.ps li em{font-style:normal;font-family:var(--f-mono);color:var(--copper);font-size:11.5px}
+.ps.fin{border-color:var(--line-strong);box-shadow:0 0 24px rgba(52,190,232,.12)}
+.ps.fin header{background:var(--trace);color:var(--on-accent)}
+.ps.fin header span{color:var(--on-accent);opacity:.8}
+
+/* Herramientas */
+.tools{display:grid;gap:12px}
+.tools > h2{font-family:var(--f-display)!important}
+.tools .card{margin:0}
+.tools p{margin:0 0 8px;font-size:13.5px;color:var(--muted)}
+.inrow{display:flex;gap:8px;flex-wrap:wrap}
+.inrow select,.inrow input{flex:1;min-width:0;font:inherit;font-size:15px;padding:9px 10px;border-radius:9px;border:1px solid var(--line-strong);background:#050A0C;color:var(--ink)}
+.inrow input.mono{font-family:var(--f-mono);font-size:13px}
+.btn{border:0;background:var(--trace);color:var(--on-accent);border-radius:9px;padding:10px 14px;font-family:var(--f-display);font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:0 0 12px rgba(52,190,232,.3)}
+.btn.sec{background:#0B161A;color:var(--trace);box-shadow:inset 0 0 0 1px var(--line-strong)}
+.btn.danger{background:var(--warn-soft);color:var(--warn);box-shadow:inset 0 0 0 1px rgba(242,181,68,.35)}
+.codebox{font-family:var(--f-mono);font-size:13px;background:#050A0C;border:1px dashed var(--line-strong);color:var(--signal);border-radius:9px;padding:10px;word-break:break-all;user-select:all}
+.msg{font-size:13px;margin-top:6px;min-height:1em}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--warn)}
+.foot{display:flex;align-items:center;justify-content:center;gap:14px;padding-block:24px 30px;color:var(--muted);font-size:12px;text-align:center;flex-wrap:wrap}
+.foot img{filter:var(--logo-filter);height:34px;width:auto;opacity:.9}
+.acrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.acrow .sync{flex:1;min-width:160px}
+.acrow .btn{padding:8px 12px;font-size:13px}
+.sheet{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px);padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet-in{width:100%;max-width:440px;max-height:100%;overflow:auto;background:#070E11;border:1px solid var(--line-strong);border-radius:18px;padding:20px 18px;box-shadow:0 0 50px rgba(52,190,232,.18)}
+.sheet-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sheet-h h3{font-family:var(--f-display);font-size:21px;margin:0}
+.gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:#fff;color:#1F1F1F;box-shadow:none;font-family:var(--f-body);font-weight:600;padding:12px}
+.or{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--muted);font-size:12px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line-strong)}
+.fields{display:grid;gap:8px}
+.fields input{width:100%;font:inherit;font-size:16px;padding:11px 12px;border-radius:9px;border:1px solid var(--line-strong);background:#050A0C;color:var(--ink)}
+.pw{position:relative}
+.pw input{padding-right:84px}
+.eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:5px;border:0;background:transparent;color:var(--trace);font-size:13px;font-weight:600;padding:8px;cursor:pointer}
+.eye[aria-pressed="false"] .slash{display:none}
+.link{border:0;background:none;color:var(--av);font-size:13px;padding:10px 0 0;cursor:pointer;text-decoration:underline}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+@media (max-width:380px){.stats{grid-template-columns:1fr 1fr}.stats .stat:last-child{grid-column:1/-1}.brand h1{font-size:21px}}
+</style>
+
+<canvas id="bg" aria-hidden="true"></canvas>
+<div class="wrap">
+  <header class="top">
+    <img class="lc" src="icons/logo-centro.png" alt="Centro de Estudiantes de Ingeniería Industrial">
+    <div class="brand"><h1>Pensum <em>Industrial</em></h1><p>UNET // prelaciones e inscripción</p></div>
+    <img class="la" src="icons/logo-alpha.png" alt="Movimiento Estudiantil Alpha">
+  </header>
+
+  <section class="sum" aria-label="Resumen">
+    <div class="big"><b id="sUC">0</b><span>de 169 U.C. aprobadas</span></div>
+    <div class="bar" id="sBar" aria-hidden="true"></div>
+    <div class="cursando" id="sCur" hidden></div>
+    <div class="stats">
+      <div class="stat"><b id="sMat">0/60</b><span>materias</span></div>
+      <div class="stat"><b id="sEl">0/2</b><span>electivas</span></div>
+      <div class="stat"><b id="sSem">–</b><span>semestres para terminar</span></div>
+    </div>
+    <div class="acrow"><div class="sync" id="sync">Tu progreso se guarda en este dispositivo.</div>
+      <span id="acct" hidden><button class="btn sec" id="acBtn">Guardar en la nube</button></span></div>
+  </section>
+
+  <nav class="tabs" aria-label="Secciones">
+    <div class="seg" role="tablist">
+      <button role="tab" id="t-materias" aria-selected="true">Materias</button>
+      <button role="tab" id="t-inscribir" aria-selected="false">Qué inscribir</button>
+      <button role="tab" id="t-plan" aria-selected="false">Mi plan</button>
+    </div>
+  </nav>
+
+  <main>
+    <section id="v-materias">
+      <div class="markbar">
+        <span>Al tocar una materia, marcarla como:</span>
+        <div class="marks" role="group" aria-label="Tipo de marca">
+          <button id="mkA" aria-pressed="true"><i class="led g"></i>Aprobada</button>
+          <button id="mkE" aria-pressed="false"><i class="led r"></i>Inscrita este semestre</button>
+        </div>
+      </div>
+      <div id="semList"></div>
+    </section>
+    <section id="v-inscribir" hidden>
+      <div class="card">
+        <h3>¿Qué vas a inscribir?</h3>
+        <div class="modes">
+          <button id="mSem" aria-pressed="true">Semestre regular</button>
+          <button id="mInt" aria-pressed="false">Intensivo</button>
+        </div>
+        <div class="limits">
+          <div class="lim"><label for="oUC">Máximo de U.C.</label>
+            <div class="step"><button id="ucMinus" aria-label="Menos U.C.">−</button><output id="oUC">20</output><button id="ucPlus" aria-label="Más U.C.">+</button></div></div>
+          <div class="lim"><label for="oN">Máximo de materias</label>
+            <div class="step"><button id="nMinus" aria-label="Menos materias">−</button><output id="oN">10</output><button id="nPlus" aria-label="Más materias">+</button></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Te recomendamos</h3>
+        <p class="note" id="recNote" style="margin-top:-4px" hidden></p>
+        <div class="rec" id="recList"></div>
+        <div class="tot" id="recTot"></div>
+      </div>
+      <div class="card">
+        <h3>Otras materias disponibles</h3>
+        <p class="note" style="margin-top:0"><b>Ruta crítica</b> son las materias que, si las dejas, retrasan tu grado. Si alguna no salió en la oferta, márcala y la recomendación se ajusta.</p>
+        <div id="otherList"></div>
+      </div>
+      <p class="note">Las prelaciones salen del pensum oficial. La oferta, los cupos, el máximo de U.C. y los permisos especiales los confirmas en Control de Estudios.</p>
+    </section>
+    <section id="v-plan" hidden>
+      <div class="card"><h3 id="planTitle">Tu ruta hasta el grado</h3>
+        <p class="note" style="margin:0">Calculado con los límites de semestre regular de “Qué inscribir”, suponiendo que apruebas todo y que te ofertan todas las materias.</p></div>
+      <div class="plan" id="planList"></div>
+    </section>
+
+    <section class="tools" aria-label="Herramientas">
+      <h2 style="font-family:var(--f-display);font-size:20px;margin:22px 0 0">Herramientas</h2>
+      <div class="card">
+        <h3 style="font-size:17px">Marcar rápido</h3>
+        <p>Marca como aprobadas todas las materias hasta un semestre y luego desmarca las que te falten.</p>
+        <div class="inrow">
+          <select id="qSem" aria-label="Semestre"></select>
+          <button class="btn sec" id="qGo">Marcar</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:17px">Terminé el semestre</h3>
+        <p>Pasa todas las materias inscritas (LED rojo) a aprobadas de una vez. Si reprobaste alguna, la desmarcas después.</p>
+        <div class="inrow"><button class="btn sec" id="finSem">Marcar inscritas como aprobadas</button></div>
+        <div class="msg" id="finMsg" role="status"></div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:17px">Código de respaldo</h3>
+        <p>Guarda este código para pasar tu progreso a otro teléfono o recuperarlo si se borra.</p>
+        <div class="codebox" id="bkCode"></div>
+        <div class="inrow" style="margin-top:8px"><button class="btn sec" id="bkCopy">Copiar código</button></div>
+        <div class="inrow" style="margin-top:12px">
+          <input class="mono" id="bkIn" placeholder="Pega aquí un código IN1-…" autocomplete="off" spellcheck="false">
+          <button class="btn" id="bkLoad">Cargar</button>
+        </div>
+        <div class="msg" id="bkMsg" role="status"></div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:17px">Empezar de cero</h3>
+        <p>Desmarca todas las materias de este dispositivo.</p>
+        <div class="inrow"><button class="btn danger" id="rst">Borrar mi progreso</button>
+          <button class="btn danger" id="rstYes" hidden>Sí, borrar todo</button><button class="btn sec" id="rstNo" hidden>Cancelar</button></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="sheet" id="acSheet" hidden>
+    <div class="sheet-in" role="dialog" aria-modal="true" aria-labelledby="acTitle">
+      <div class="sheet-h"><h3 id="acTitle">Tu cuenta</h3><button class="ghost" id="acClose">Cerrar</button></div>
+      <div id="acOut">
+        <p class="note" style="margin:0 0 12px">Inicia sesión y tus materias se guardan en la nube. Aparecen en cualquier teléfono donde entres con la misma cuenta.</p>
+        <button class="btn gbtn" id="acGoogle"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#EA4335" d="M12 10.2v3.9h5.4c-.2 1.3-1.6 3.8-5.4 3.8-3.2 0-5.9-2.7-5.9-6s2.7-6 5.9-6c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.3 14.6 2.3 12 2.3 6.7 2.3 2.4 6.6 2.4 12s4.3 9.7 9.6 9.7c5.5 0 9.2-3.9 9.2-9.4 0-.6-.1-1.1-.2-1.6H12z"/></svg>Continuar con Google</button>
+        <div class="or"><span>o con tu correo</span></div>
+        <div class="fields">
+          <input id="acEmail" type="email" inputmode="email" autocomplete="email" placeholder="correo@ejemplo.com" aria-label="Correo">
+          <div class="pw"><input id="acPass" type="password" autocomplete="current-password" placeholder="Contraseña (mínimo 6 caracteres)" aria-label="Contraseña">
+            <button type="button" class="eye" id="acEye" aria-label="Mostrar contraseña" aria-pressed="false"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="slash" d="M4 4l16 16"/></svg><span id="acEyeT">Ver</span></button></div>
+        </div>
+        <div class="inrow" style="margin-top:10px"><button class="btn" id="acLogin">Entrar</button><button class="btn sec" id="acSignup">Crear cuenta</button></div>
+        <button class="link" id="acReset">¿Olvidaste tu contraseña?</button>
+        <p class="note" style="margin-top:12px">En iPhone, si el botón de Google no funciona dentro de la app instalada, usa correo y contraseña.</p>
+      </div>
+      <div id="acIn" hidden>
+        <p style="margin:0 0 4px">Sesión iniciada como</p>
+        <p class="code" id="acWho" style="font-size:14px;color:var(--trace);margin:0 0 12px"></p>
+        <p class="note" style="margin:0 0 12px">Tus materias se guardan solas en la nube cada vez que marcas una.</p>
+        <button class="btn danger" id="acLogout">Cerrar sesión</button>
+      </div>
+      <div class="msg" id="acMsg" role="status"></div>
+      <p class="note" style="margin-top:14px;font-size:11.5px">Solo guardamos tu correo y las materias que marcas. Nadie más puede verlas. La app la administra el Centro de Estudiantes de Ingeniería Industrial.</p>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <img src="icons/logo-centro.png" alt=""><span>Centro de Estudiantes de Ingeniería Industrial<br>Movimiento Estudiantil Alpha</span><img src="icons/logo-alpha.png" alt="">
+  </footer>
+</div>
+
+<script>
+const DATA = {"total_uc":169,"semesters":[{"n":1,"courses":[{"code":"0112101T","name":"Introducción a la Ingeniería Industrial","t":0,"p":2,"l":0,"uc":1},{"code":"0415102T","name":"Computación I","t":2,"p":0,"l":3,"uc":3},{"code":"0644103T","name":"Dibujo I","t":4,"p":0,"l":0,"uc":3},{"code":"0826101T","name":"Matemática I","t":4,"p":2,"l":0,"uc":4},{"code":"1032109T","name":"Efectividad Personal","t":2,"p":0,"l":0,"uc":1},{"code":"1023111T","name":"Lenguaje y Comunicación","t":3,"p":0,"l":0,"uc":2}]},{"n":2,"courses":[{"code":"0826201T","name":"Matemática II","pre":["0826101T"],"t":4,"p":2,"l":0,"uc":4},{"code":"0846203T","name":"Física I","pre":["0826101T"],"co":["0842204L"],"t":4,"p":2,"l":0,"uc":4},{"code":"0842204L","name":"Lab. de Física I","co":["0846203T"],"t":0,"p":0,"l":2,"uc":1},{"code":"0914201T","name":"Química General I","t":4,"p":0,"l":0,"uc":3},{"code":"0912202L","name":"Lab. de Química General I","co":["0914201T"],"t":0,"p":0,"l":2,"uc":1},{"code":"1023202T","name":"Inglés I","minUC":12,"t":3,"p":0,"l":0,"uc":2},{"code":"1012207T","name":"Ciencia y Sociedad I","t":2,"p":0,"l":0,"uc":1}]},{"n":3,"courses":[{"code":"0615301T","name":"Mecánica I","pre":["0846203T","0826201T","0842204L"],"t":5,"p":0,"l":0,"uc":3},{"code":"0644302T","name":"Dibujo de Elementos de Máquina","pre":["0644103T"],"t":2,"p":0,"l":2,"uc":3},{"code":"0826301T","name":"Matemática III","pre":["0826201T"],"t":4,"p":2,"l":0,"uc":4},{"code":"0846302T","name":"Física II","pre":["0826201T","0846203T"],"co":["0842303L"],"t":4,"p":2,"l":0,"uc":4},{"code":"0842303L","name":"Lab. de Física II","co":["0846302T"],"t":0,"p":0,"l":2,"uc":1},{"code":"1023302T","name":"Inglés II","pre":["1023202T"],"t":3,"p":0,"l":0,"uc":2},{"code":"1032301T","name":"Necesidades, Valores y Proyecto de Vida","pre":["1012207T"],"t":2,"p":0,"l":0,"uc":1}]},{"n":4,"courses":[{"code":"0113401T","name":"Procesos Industriales","pre":["0644302T"],"minUC":40,"t":1,"p":2,"l":0,"uc":2},{"code":"0626401T","name":"Termodinámica I","pre":["0826301T","0615301T"],"t":6,"p":0,"l":0,"uc":4},{"code":"0634403T","name":"Ciencia de los Materiales I","pre":["0615301T"],"t":4,"p":0,"l":0,"uc":3},{"code":"0826401T","name":"Matemática IV","pre":["0826301T"],"t":4,"p":2,"l":0,"uc":4},{"code":"1013401T","name":"Economía","pre":["0826201T"],"t":3,"p":0,"l":0,"uc":2},{"code":"1113404T","name":"Ecología y Contaminación Ambiental","pre":["0914201T"],"t":2,"p":1,"l":0,"uc":2}]},{"n":5,"courses":[{"code":"0213507T","name":"Ingeniería Eléctrica","pre":["0846302T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0213508L","name":"Lab. de Ingeniería Eléctrica","co":["0213507T"],"t":0,"p":0,"l":3,"uc":1},{"code":"0624604T","name":"Mecánica de Fluidos","pre":["0626401T","0826401T"],"t":4,"p":0,"l":0,"uc":3},{"code":"0622502L","name":"Lab. de Mecánica de Fluidos","co":["0624604T"],"t":0,"p":0,"l":2,"uc":1},{"code":"0634509T","name":"Procesos Metalmecánicos","pre":["0634403T"],"t":4,"p":0,"l":0,"uc":3},{"code":"0632511L","name":"Lab. de Procesos Metalmecánicos","co":["0634509T"],"t":0,"p":0,"l":3,"uc":1},{"code":"0633504L","name":"Lab. de Ciencia de los Materiales","pre":["0634403T","0912202L"],"t":0,"p":0,"l":3,"uc":1},{"code":"0834405T","name":"Estadística I","pre":["0826301T"],"t":3,"p":1,"l":0,"uc":3}]},{"n":6,"courses":[{"code":"0113602T","name":"Ingeniería de Métodos I","pre":["0834405T","0113401T"],"t":1,"p":2,"l":0,"uc":2},{"code":"0112603L","name":"Lab. de Ingeniería de Métodos I","co":["0113602T"],"t":0,"p":2,"l":0,"uc":1},{"code":"0124601T","name":"Organización","pre":["0113401T"],"co":["0113602T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0124613T","name":"Sistemas y Procedimientos","co":["0124601T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0134604T","name":"Contabilidad Gerencial I","pre":["0113401T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0834501T","name":"Estadística II","pre":["0834405T"],"t":2,"p":2,"l":0,"uc":3},{"code":"1032601T","name":"Legislación, Valores y Proyecto de País","pre":["1013401T"],"t":2,"p":0,"l":0,"uc":1},{"code":"ELEC1","name":"Electiva I","elective":true,"minUC":75,"t":1,"p":2,"l":0,"uc":2}]},{"n":7,"courses":[{"code":"1000001T","name":"Seminario de Servicio Comunitario","minPct":50,"t":0,"p":0,"l":0,"uc":0},{"code":"0113705T","name":"Ingeniería de Métodos II","pre":["0112603L","0113602T"],"t":1,"p":2,"l":0,"uc":2},{"code":"0112706L","name":"Lab. de Ingeniería de Métodos II","co":["0113705T"],"t":0,"p":2,"l":0,"uc":1},{"code":"0114703T","name":"Seguridad e Higiene Industrial","pre":["0113602T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0124702T","name":"Mercadotecnia","pre":["0124601T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0124704T","name":"Administración de Personal","pre":["0124601T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0134707T","name":"Contabilidad Gerencial II","pre":["0134604T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0135701T","name":"Investigación de Operaciones I","pre":["0834405T"],"t":1,"p":4,"l":0,"uc":4}]},{"n":8,"courses":[{"code":"0114803T","name":"Control de Calidad","pre":["0834501T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0114807T","name":"Diseño de Plantas Industriales","pre":["0113705T","0114703T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0124804T","name":"Comportamiento Organizacional","pre":["0124704T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0124806T","name":"Gerencia","pre":["0124702T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0134805T","name":"Ingeniería Económica","pre":["0134707T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0135802T","name":"Investigación de Operaciones II","pre":["0135701T","0834501T"],"t":3,"p":2,"l":0,"uc":4}]},{"n":9,"courses":[{"code":"0114905T","name":"Mantenimiento Industrial","pre":["0134805T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0114904T","name":"Medición y Mejoramiento de la Productividad","pre":["0134805T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0124903T","name":"Investigación y Desarrollo de Productos","pre":["0124806T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0134901T","name":"Simulación","pre":["0135802T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0114902T","name":"Formulación y Evaluación de Proyectos","pre":["0124806T"],"t":2,"p":2,"l":0,"uc":3},{"code":"0114906T","name":"Administración de la Producción","pre":["0135802T"],"t":2,"p":2,"l":0,"uc":3},{"code":"ELEC2","name":"Electiva II","elective":true,"minUC":115,"t":1,"p":2,"l":0,"uc":2}]},{"n":10,"courses":[{"code":"TAP","name":"Trabajo de Aplicación Profesional (Proyecto de Grado o Pasantías)","tap":true,"t":0,"p":0,"l":0,"uc":12}]}],"electives":[{"code":"0123614T","name":"Gestión Tecnológica","minUC":75},{"code":"0123608T","name":"Introducción a los Negocios Internacionales","minUC":75},{"code":"0123610T","name":"Investigación de Mercado","minUC":75},{"code":"","name":"Empaquetecnia","minUC":75},{"code":"0643801T","name":"Introducción a la Ergonomía","minUC":75},{"code":"","name":"Agroindustria","minUC":75},{"code":"0423504T","name":"Formación de Emprendedores","minUC":75},{"code":"0643903T","name":"Ingeniería del Automóvil","minUC":75},{"code":"0133907T","name":"Toma de Decisiones Basadas en Costos","minUC":115}]};
+const TOTAL_UC = 169, COURSE_UC = 157, ELECT_NEEDED = 2, ELECT_UC = 2, EL_MIN = [75, 115], TEG_UC = 125;   // Electiva I: 75 U.C. · Electiva II: 115 U.C.
+const ROMAN = ["","I","II","III","IV","V","VI","VII","VIII","IX","X"];
+const SEMC = {1:"#5DADE2",2:"#2E86DE",3:"#17A589",4:"#28B463",5:"#A4C639",6:"#F4C430",7:"#F39C12",8:"#E8572F",9:"#C2185B",10:"#6C5CE7",0:"#8E44AD"};
+const DARKTXT = new Set([1,5,6,7]);
+const chipStyle = s => `background:${SEMC[s]};color:${DARKTXT.has(s)?"#111":"#fff"}`;
+
+// ---------- datos ----------
+const CORE = [], BY = {};
+let TAP = null;
+DATA.semesters.forEach(s => s.courses.forEach(c => {
+  if (c.elective) return;
+  const o = {...c, sem:s.n, key:c.code, pre:c.pre||[], co:c.co||[]};
+  if (c.tap) { TAP = o; return; }
+  CORE.push(o); BY[o.key] = o;
+}));
+const ELECT = DATA.electives.map(e => ({...e, key: e.code || ("E-" + e.name.normalize("NFD").replace(/[^A-Za-z]/g,"")), pre:e.pre||[], uc:ELECT_UC, elective:true}));
+ELECT.forEach(e => BY[e.key] = e);
+const ORDER = [...CORE.map(c=>c.key), ...ELECT.map(e=>e.key)];   // orden fijo para el código de respaldo
+const nm = k => BY[k] ? BY[k].name : k;
+
+// dependientes y ruta crítica (solo materias del pensum)
+const DEPS = {}; CORE.forEach(c => DEPS[c.key] = []);
+CORE.forEach(c => [...c.pre, ...c.co].forEach(p => DEPS[p] && DEPS[p].push(c.key)));
+const CHAIN = {};
+function chain(k){ if (CHAIN[k]) return CHAIN[k];
+  const d = CORE.filter(c => c.pre.includes(k)).map(c => chain(c.key));
+  return CHAIN[k] = 1 + (d.length ? Math.max(...d) : 0); }
+CORE.forEach(c => chain(c.key));
+function unlocks(k){ const seen = new Set(), st=[k];
+  while(st.length){ const x=st.pop(); (DEPS[x]||[]).forEach(d=>{ if(!seen.has(d)){seen.add(d); st.push(d);} }); }
+  return seen.size; }
+const UNLOCK = {}; CORE.forEach(c => UNLOCK[c.key] = unlocks(c.key));
+function unlockSet(k){ const seen = new Set(), st=[k];
+  while(st.length){ const x=st.pop(); (DEPS[x]||[]).forEach(d=>{ if(!seen.has(d)){seen.add(d); st.push(d);} }); }
+  return seen; }
+const OPEN = new Set();
+
+// ---------- estado ----------
+const LS = "pensumIndustrialUNET.v1";
+let MARK = "a";   // qué marca un toque: "a" aprobada, "e" inscrita
+const plusE = () => new Set([...S.a, ...S.e]);
+const DEF_LIM = {sem:{uc:20,n:10}, int:{uc:8,n:2}};
+let S = {a:new Set(), e:new Set(), x:new Set(), mode:"sem", lim:JSON.parse(JSON.stringify(DEF_LIM)), t:0};
+function loadLocal(){ try{ const r = JSON.parse(localStorage.getItem(LS)||"null"); if(r) applyRaw(r); }catch(e){} }
+function applyRaw(r){
+  S.a = new Set((r.a||[]).filter(k=>BY[k])); S.x = new Set((r.x||[]).filter(k=>BY[k]));
+  S.e = new Set((r.e||[]).filter(k=>BY[k] && !S.a.has(k)));
+  S.mode = r.mode==="int"?"int":"sem";
+  if (r.lim && r.lim.sem && r.lim.int) S.lim = {sem:{uc:+r.lim.sem.uc||20,n:+r.lim.sem.n||10}, int:{uc:+r.lim.int.uc||8,n:+r.lim.int.n||2}};
+  S.t = r.t||0;
+}
+const raw = () => ({a:[...S.a], e:[...S.e], x:[...S.x], mode:S.mode, lim:S.lim, t:S.t});
+let dbRef = null, dbBusy = Promise.resolve(), dbTimer = null;
+function save(){
+  S.t = Date.now();
+  try{ localStorage.setItem(LS, JSON.stringify(raw())); }catch(e){}
+  if (dbRef){ clearTimeout(dbTimer); dbTimer = setTimeout(()=>{ const body = raw();
+    dbBusy = dbBusy.then(()=>dbRef.set(body)).then(()=>setSync(true)).catch(()=>{}); }, 900); }
+}
+function setSync(t){ document.getElementById("sync").textContent = t === true ? "Tu progreso se sincroniza con tu cuenta de Claude y se guarda en este dispositivo." : (t || "Tu progreso se guarda en este dispositivo."); }
+
+// ---------- lógica ----------
+const electCount = (A, extra=0) => Math.min(ELECT_NEEDED, ELECT.filter(e=>A.has(e.key)).length + extra);
+const ucOf = (A, extra=0) => CORE.reduce((s,c)=>s+(A.has(c.key)?c.uc:0),0) + ELECT_UC*electCount(A,extra);
+function missing(c, A, uc){
+  const m = [];
+  c.pre.forEach(p => { if(!A.has(p)) m.push(nm(p)); });
+  const mu = c.elective ? Math.max(c.minUC||0, EL_MIN[Math.min(electCount(A), ELECT_NEEDED-1)]) : c.minUC;
+  if (mu && uc < mu) m.push(`${mu} U.C. aprobadas`);
+  if (c.minPct && uc < Math.ceil(TOTAL_UC*c.minPct/100)) m.push(`${c.minPct}% de las U.C. (${Math.ceil(TOTAL_UC*c.minPct/100)})`);
+  return m;
+}
+function recommend(A, lim, excl, extraE=0){
+  const uc = ucOf(A, extraE);
+  const ok = c => !A.has(c.key) && !excl.has(c.key) && missing(c,A,uc).length===0;
+  const cand = CORE.filter(ok); const candSet = new Set(cand.map(c=>c.key));
+  const eA = electCount(A, extraE), need = ELECT_NEEDED - eA;
+  const eligOf = j => ELECT.filter(e => !A.has(e.key) && !excl.has(e.key) && e.pre.every(p=>A.has(p)) && uc >= Math.max(e.minUC||0, EL_MIN[j]));
+  const eligE = eligOf(Math.min(eA, ELECT_NEEDED-1));
+  const slots = [];
+  for (let i=0;i<need;i++){ const j = eA+i, opts = eligOf(j); if (!opts.length || eligE.length < i+1) break;
+    slots.push({key:"SLOT"+i, name:j===0?"Electiva I":"Electiva II", uc:ELECT_UC, sem:j===0?6:9, slot:true, pre:[], co:[], options:opts}); }
+  const pool = [...cand, ...slots].sort((p,q) =>
+    (q.slot?1:CHAIN[q.key]) - (p.slot?1:CHAIN[p.key]) || p.sem - q.sem || (q.slot?0:UNLOCK[q.key]) - (p.slot?0:UNLOCK[p.key]));
+  const picked = [], pk = new Set(); let pu = 0, pn = 0;
+  for (const c of pool){
+    if (pk.has(c.key)) continue;
+    const g = []; let bad = false; const st = [...c.co], seen = new Set([c.key]);
+    while (st.length){ const co = st.pop(); if (seen.has(co)) continue; seen.add(co);
+      if (A.has(co) || pk.has(co)) continue; if (candSet.has(co)){ g.push(BY[co]); st.push(...BY[co].co); } else bad = true; }
+    if (bad) continue; g.push(c);
+    const gk = new Set(g.map(x=>x.key));
+    const mates = cand.filter(x => !pk.has(x.key) && !gk.has(x.key) && x.co.some(k=>gk.has(k)) && x.co.every(k=>A.has(k)||pk.has(k)||gk.has(k)));
+    const fits = arr => { const u = arr.reduce((s,x)=>s+x.uc,0), n = arr.filter(x=>x.uc>0).length; return (pu+u <= lim.uc && pn+n <= lim.n) ? [u,n] : null; };
+    const use = fits([...g, ...mates]) ? [...g, ...mates] : g, un = fits(use);
+    if (!un) continue;
+    use.forEach(x=>{ picked.push(x); pk.add(x.key); }); pu += un[0]; pn += un[1];
+  }
+  return {picked, uc:pu, n:pn, cand, eligE, pk};
+}
+function projection(){
+  const A = new Set(S.a); let extra = 0; const out = [];
+  if (S.e.size){ const cur = [...S.e].map(k=>BY[k]);
+    out.push({current:true, picked:cur, uc:cur.reduce((t,c)=>t+c.uc,0), n:cur.filter(c=>c.uc>0).length});
+    S.e.forEach(k => A.add(k)); }
+  for (let i=0;i<14;i++){
+    const r = recommend(A, S.lim.sem, new Set(), extra);
+    if (!r.picked.length) break;
+    r.picked.forEach(x => { if (x.slot) extra++; else A.add(x.key); });
+    out.push(r);
+  }
+  const doneCore = CORE.every(c => A.has(c.key)), doneE = electCount(A,extra) >= ELECT_NEEDED;
+  return {sems:out, complete: doneCore && doneE, A, extra};
+}
+
+// ---------- render ----------
+const $ = id => document.getElementById(id);
+const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+function statusOf(c, uc){
+  if (S.a.has(c.key)) return '<span class="st ok">Aprobada</span>';
+  if (S.e.has(c.key)) return '<span class="st en">Inscrita · cursando</span>';
+  const m = missing(c, S.a, uc);
+  if (!m.length){
+    const pend = (c.co||[]).filter(k=>!S.a.has(k));
+    return pend.length ? `<span class="st av">Disponible</span><span>junto con ${pend.map(nm).join(", ")}</span>` : '<span class="st av">Disponible</span>';
+  }
+  return `<span class="st lk">Bloqueada</span><span>Falta: ${m.join(", ")}</span>`;
+}
+function row(c, uc){
+  const on = S.a.has(c.key);
+  return `<button class="row${S.e.has(c.key)?" enr":""}" data-k="${c.key}" aria-pressed="${on}">
+    <span class="ck">${CHECK}</span>
+    <span class="tx"><span class="nm">${c.name}</span>
+      <span class="sub">${c.code?`<span class="code">${c.code}</span>`:""}${statusOf(c,uc)}</span></span>
+    <span class="uc">${c.uc} U.C.</span></button>`;
+}
+function electGroup(es, title, uc){
+  const n = es.filter(e=>S.a.has(e.key)).length;
+  return `<div class="elh"><span class="chip" style="${chipStyle(0)};height:22px;min-width:32px;font-size:12px">EL</span><b>${title}</b><span>${Math.min(n,ELECT_NEEDED)}/${ELECT_NEEDED} aprobadas · elige ${ELECT_NEEDED} de la lista</span></div>
+    <div class="list">${es.map(e=>row(e,uc)).join("")}</div>`;
+}
+function renderMaterias(uc){
+  let h = "";
+  for (let s=1;s<=9;s++){
+    const cs = CORE.filter(c=>c.sem===s);
+    const done = cs.filter(c=>S.a.has(c.key)), ucS = cs.reduce((t,c)=>t+c.uc,0), ucD = done.reduce((t,c)=>t+c.uc,0);
+    const all = done.length===cs.length;
+    h += `<div class="sem"><div class="semh"><span class="chip" style="${chipStyle(s)}">${ROMAN[s]}</span>
+      <div><h2>Semestre ${ROMAN[s]}</h2><div class="meta">${done.length}/${cs.length} materias · ${ucD}/${ucS} U.C.</div></div>
+      ${MARK==="a"?`<button class="all" data-sem="${s}" data-on="${all?0:1}">${all?"Desmarcar":"Marcar todo"}</button>`:""}</div>
+      <div class="list">${cs.map(c=>row(c,uc)).join("")}</div>
+      ${s===6?electGroup(ELECT, "Electivas", uc) + `<p class="note">Se cursan 2 electivas: <b>Electiva I</b> en el semestre VI (con 75 U.C. aprobadas) y <b>Electiva II</b> en el IX (con 115 U.C.). Llevas ${electCount(S.a)}/2.</p>`:""}</div>`;
+  }
+  const eA = electCount(S.a);
+  const allCore = CORE.every(c=>S.a.has(c.key)) && eA>=ELECT_NEEDED;
+  const pg = TEG_UC;
+  h += `<div class="sem"><div class="semh"><span class="chip" style="${chipStyle(10)}">X</span>
+    <div><h2>Trabajo de Aplicación Profesional</h2><div class="meta">12 U.C. · modalidad a escoger</div></div></div>
+    <div class="list" style="padding:12px 14px;display:grid;gap:6px;font-size:14px">
+      <div><b>Proyecto Especial de Grado:</b> ${pg} U.C. aprobadas (80%). ${uc>=pg?'<span class="st ok">Cumples</span>':`<span class="st lk">Te faltan ${pg-uc} U.C.</span>`}</div>
+      <div><b>Pasantías:</b> todas las materias aprobadas (${COURSE_UC} U.C.). ${allCore?'<span class="st ok">Cumples</span>':`<span class="st lk">Te faltan ${COURSE_UC-uc} U.C.</span>`}</div>
+    </div></div>`;
+  $("semList").innerHTML = h;
+}
+function whyChips(c){
+  if (c.slot) return '<span class="st av">Electiva</span>';
+  const w = [];
+  if (CHAIN[c.key] >= 2) w.push(`<span class="st wn">Ruta crítica</span>`);
+  if (UNLOCK[c.key]) w.push(`<button class="st av opener" data-open="${c.key}" aria-expanded="${OPEN.has(c.key)}">Abre ${UNLOCK[c.key]} materia${UNLOCK[c.key]>1?"s":""} <span class="car" aria-hidden="true">▾</span></button>`);
+  if ((c.co||[]).length) w.push(`<span class="st lk">Correquisito: ${c.co.map(nm).join(", ")}</span>`);
+  if (!w.length) w.push('<span class="st lk">No prela otras</span>');
+  return w.join("");
+}
+function opensPanel(c){
+  if (!OPEN.has(c.key)) return "";
+  const direct = (DEPS[c.key]||[]).map(k=>BY[k]).sort((p,q)=>p.sem-q.sem);
+  const dset = new Set(direct.map(x=>x.key));
+  const later = [...unlockSet(c.key)].filter(k=>!dset.has(k)).map(k=>BY[k]).sort((p,q)=>p.sem-q.sem);
+  const uc = ucOf(S.a);
+  const item = d => { const other = [...d.pre, ...d.co].filter(p=>p!==c.key && !S.a.has(p)).map(nm);
+    return `<li><span class="chip" style="${chipStyle(d.sem)};height:20px;min-width:30px;font-size:11px">${ROMAN[d.sem]}</span>
+      <span><b>${d.name}</b>${other.length?`<em>También necesita: ${other.join(", ")}</em>`:`<em>Se abre apenas apruebes esta</em>`}</span></li>`; };
+  let h = `<div class="opens"><p>Al aprobarla puedes inscribir:</p><ul>${direct.map(item).join("")}</ul>`;
+  if (later.length){
+    const bySem = {}; later.forEach(d => (bySem[d.sem] = bySem[d.sem]||[]).push(d.name));
+    h += `<p>Y más adelante, en cadena:</p><div class="later">${Object.keys(bySem).map(s=>`<div><span class="chip" style="${chipStyle(+s)};height:18px;min-width:28px;font-size:10.5px">${ROMAN[s]}</span> ${bySem[s].join(" · ")}</div>`).join("")}</div>`;
+  }
+  return h + `</div>`;
+}
+function renderInscribir(){
+  const L = S.lim[S.mode];
+  $("mSem").setAttribute("aria-pressed", S.mode==="sem"); $("mInt").setAttribute("aria-pressed", S.mode==="int");
+  $("oUC").textContent = L.uc; $("oN").textContent = L.n;
+  const r = recommend(plusE(), L, S.x);
+  $("recList").innerHTML = r.picked.length ? r.picked.map(c => `<div class="ri">
+      <span class="chip" style="${chipStyle(c.slot?0:c.sem)}">${c.slot?"EL":ROMAN[c.sem]}</span>
+      <div class="tx"><div class="nm" style="font-weight:600">${c.name}${c.code?` <span class="code" style="color:var(--muted)">${c.code}</span>`:""}</div>
+        <div class="why">${whyChips(c)}</div>
+        ${c.slot?"":opensPanel(c)}
+        ${c.slot?`<div class="opts"><div><b>Puedes elegir:</b> ${c.options.map(e=>e.name).join(" · ")}</div></div>`:""}</div>
+      <span class="uc">${c.uc}</span></div>`).join("")
+    : `<div class="empty">${CORE.every(c=>S.a.has(c.key)) ? "¡Ya aprobaste todas las materias! Te queda el Trabajo de Aplicación Profesional." : "No hay materias disponibles con estos límites. Sube el máximo de U.C. o revisa las que marcaste como no ofertadas."}</div>`;
+  $("recNote").hidden = !S.e.size;
+  if (S.e.size) $("recNote").textContent = `Para el próximo semestre, suponiendo que apruebas las ${S.e.size} materia${S.e.size>1?"s":""} que estás cursando.`;
+  $("recTot").innerHTML = r.picked.length ? `<span>${r.n} materia${r.n!==1?"s":""}</span><b>${r.uc} U.C.</b>` : "";
+  const others = [...r.cand.filter(c=>!r.pk.has(c.key))];
+  const ex = [...S.x].map(k=>BY[k]).filter(Boolean);
+  let h = others.map(c => `<div class="mini"><span class="chip" style="${chipStyle(c.sem)};height:24px;min-width:34px;font-size:13px">${ROMAN[c.sem]}</span>
+      <div class="tx">${c.name} <span class="uc" style="font-size:13px">· ${c.uc} U.C.</span></div>
+      <button class="ghost" data-x="${c.key}">No la ofertaron</button></div>`).join("");
+  if (!others.length) h = '<div class="empty">No hay más materias disponibles fuera de la recomendación.</div>';
+  if (ex.length) h += `<p class="note" style="margin-top:12px">Marcadas como no ofertadas:</p>` + ex.map(c => `<div class="mini"><div class="tx" style="color:var(--muted)">${c.name}</div>
+      <button class="ghost" data-in="${c.key}">Volver a incluir</button></div>`).join("");
+  $("otherList").innerHTML = h;
+}
+function renderPlan(){
+  const p = projection();
+  const n = p.sems.length;
+  $("sSem").textContent = p.complete ? (n + 1) : "–";
+  $("planTitle").textContent = p.complete ? `Te faltan ${n} semestre${n!==1?"s":""}${S.e.size?" (contando el actual)":""} + el Trabajo de Aplicación` : "Tu ruta hasta el grado";
+  const off = p.sems.length && p.sems[0].current ? 0 : 1;
+  let h = p.sems.map((r,i) => `<div class="ps${r.current?" cur":""}"><header><b>${r.current?"Semestre actual (inscritas)":(i+off===1?"Próximo semestre":(i+off)+".º semestre")}</b><span>${r.n} materia${r.n!==1?"s":""} · ${r.uc} U.C.</span></header>
+    <ul>${r.picked.map(c=>`<li><i style="background:${SEMC[c.slot?0:c.sem]}"></i><span>${c.name}</span><em>${c.uc} U.C.</em></li>`).join("")}</ul></div>`).join("");
+  if (p.complete) h += `<div class="ps fin"><header><b>Trabajo de Aplicación Profesional</b><span>12 U.C.</span></header>
+    <ul><li><span>Pasantías o Proyecto de Grado. Con todas las materias aprobadas cumples los requisitos de ambas modalidades.</span></li></ul></div>`;
+  else if (!n) h += `<div class="empty">Marca tus materias aprobadas para calcular tu ruta.</div>`;
+  else h += `<div class="empty">Con los límites actuales no se completa el pensum. Revisa el máximo de U.C.</div>`;
+  $("planList").innerHTML = h;
+}
+function renderSummary(uc){
+  $("sUC").textContent = uc;
+  const ec = [...S.e].map(k=>BY[k]);
+  $("sCur").hidden = !ec.length;
+  if (ec.length) $("sCur").innerHTML = `<i></i>Cursando ${ec.length} materia${ec.length>1?"s":""} · ${ec.reduce((t,c)=>t+c.uc,0)} U.C. este semestre`;
+  const nCore = CORE.filter(c=>c.uc>0), done = nCore.filter(c=>S.a.has(c.key)).length;
+  $("sMat").textContent = `${done}/${nCore.length}`;
+  $("sEl").textContent = `${electCount(S.a)}/${ELECT_NEEDED}`;
+  let bar = "";
+  for (let s=1;s<=9;s++){ const u = CORE.filter(c=>c.sem===s&&S.a.has(c.key)).reduce((t,c)=>t+c.uc,0); if(u) bar += `<i style="width:${u/TOTAL_UC*100}%;background:${SEMC[s]}"></i>`; }
+  const ue = electCount(S.a)*ELECT_UC; if (ue) bar += `<i style="width:${ue/TOTAL_UC*100}%;background:${SEMC[0]}"></i>`;
+  $("sBar").innerHTML = bar;
+}
+function render(){
+  const uc = ucOf(S.a);
+  renderSummary(uc); renderMaterias(uc); renderInscribir(); renderPlan();
+  $("bkCode").textContent = encode();
+}
+
+// ---------- respaldo ----------
+function hexOf(set){
+  let bits = ORDER.map(k => set.has(k)?1:0); while (bits.length % 4) bits.push(0);
+  let hex = ""; for (let i=0;i<bits.length;i+=4) hex += ((bits[i]<<3)|(bits[i+1]<<2)|(bits[i+2]<<1)|bits[i+3]).toString(16);
+  return hex.toUpperCase();
+}
+function encode(){ return "IN1-" + hexOf(S.a) + (S.e.size ? "-" + hexOf(S.e).replace(/0+$/,"") : ""); }
+function decode(code){
+  const m = /^IN1-([0-9A-F]+)(?:-([0-9A-F]*))?$/i.exec(code.trim().replace(/\s+/g,""));
+  if (!m) return null;
+  const read = hx => { const set = new Set(); [...(hx||"")].forEach((h,i) => { const v = parseInt(h,16); for (let b=0;b<4;b++) if (v & (8>>b)) { const k = ORDER[i*4+b]; if (k) set.add(k); } }); return set; };
+  const a = read(m[1]); a.e = read(m[2]); return a;
+}
+
+// ---------- eventos ----------
+function toggle(k){
+  if (MARK==="e"){ if (S.e.has(k)) S.e.delete(k); else { S.e.add(k); S.a.delete(k); } }
+  else { if (S.a.has(k)) S.a.delete(k); else { S.a.add(k); S.e.delete(k); } }
+  save(); render(); }
+function setMark(m){ MARK = m; $("mkA").setAttribute("aria-pressed", m==="a"); $("mkE").setAttribute("aria-pressed", m==="e"); render(); }
+$("semList").addEventListener("click", e => {
+  const r = e.target.closest(".row"); if (r) return toggle(r.dataset.k);
+  const b = e.target.closest(".all"); if (b){ const s = +b.dataset.sem, on = b.dataset.on==="1";
+    CORE.filter(c=>c.sem===s).forEach(c => { if (on){ S.a.add(c.key); S.e.delete(c.key); } else S.a.delete(c.key); }); save(); render(); }
+});
+$("mkA").onclick = () => setMark("a"); $("mkE").onclick = () => setMark("e");
+$("finSem").onclick = () => { if (!S.e.size){ $("finMsg").className="msg bad"; $("finMsg").textContent="No tienes materias marcadas como inscritas."; return; }
+  const n = S.e.size; S.e.forEach(k=>S.a.add(k)); S.e = new Set(); save(); render();
+  $("finMsg").className="msg ok"; $("finMsg").textContent=`Listo: ${n} materia${n>1?"s":""} pasaron a aprobadas. Si reprobaste alguna, desmárcala en Materias.`; };
+$("recList").addEventListener("click", e => {
+  const o = e.target.closest(".opener"); if (!o) return;
+  const k = o.dataset.open; OPEN.has(k) ? OPEN.delete(k) : OPEN.add(k); renderInscribir();
+});
+$("otherList").addEventListener("click", e => {
+  const x = e.target.closest("[data-x]"), i = e.target.closest("[data-in]");
+  if (x){ S.x.add(x.dataset.x); save(); render(); } if (i){ S.x.delete(i.dataset.in); save(); render(); }
+});
+$("mSem").onclick = () => { S.mode="sem"; save(); render(); };
+$("mInt").onclick = () => { S.mode="int"; save(); render(); };
+const bump = (f,d,min,max) => () => { const L = S.lim[S.mode]; L[f] = Math.max(min, Math.min(max, L[f]+d)); save(); render(); };
+$("ucMinus").onclick = bump("uc",-1,1,30); $("ucPlus").onclick = bump("uc",1,1,30);
+$("nMinus").onclick = bump("n",-1,1,12); $("nPlus").onclick = bump("n",1,1,12);
+
+const TABS = ["materias","inscribir","plan"];
+function show(t){ if (!TABS.includes(t)) t = "materias";
+  TABS.forEach(x => { $("v-"+x).hidden = x!==t; $("t-"+x).setAttribute("aria-selected", x===t); }); }
+TABS.forEach(t => $("t-"+t).onclick = () => { if (location.hash !== "#"+t) location.hash = t; else show(t); window.scrollTo({top:$("v-materias").parentElement.offsetTop-70, behavior:"smooth"}); });
+window.addEventListener("hashchange", () => show(location.hash.slice(1)));
+
+$("qSem").innerHTML = [1,2,3,4,5,6,7,8,9].map(s=>`<option value="${s}">Hasta el semestre ${ROMAN[s]}</option>`).join("");
+$("qSem").value = "4";
+$("qGo").onclick = () => { const s = +$("qSem").value; CORE.filter(c=>c.sem<=s).forEach(c=>S.a.add(c.key)); save(); render(); show("materias"); };
+
+$("bkCopy").onclick = async () => { const c = encode();
+  try { await navigator.clipboard.writeText(c); $("bkMsg").className="msg ok"; $("bkMsg").textContent = "Código copiado."; }
+  catch(e){ const r = document.createRange(); r.selectNodeContents($("bkCode")); const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+    $("bkMsg").className="msg"; $("bkMsg").textContent = "Selecciona el código y cópialo manualmente."; } };
+$("bkLoad").onclick = () => { const a = decode($("bkIn").value);
+  if (!a){ $("bkMsg").className="msg bad"; $("bkMsg").textContent = "Ese código no es válido. Debe empezar por IN1-."; return; }
+  S.e = new Set([...a.e].filter(k=>!a.has(k))); S.a = new Set(a); save(); render(); $("bkIn").value=""; $("bkMsg").className="msg ok"; $("bkMsg").textContent = `Progreso cargado: ${a.size} materias aprobadas.`; };
+$("rst").onclick = () => { $("rst").hidden = true; $("rstYes").hidden = false; $("rstNo").hidden = false; };
+$("rstNo").onclick = () => { $("rst").hidden = false; $("rstYes").hidden = true; $("rstNo").hidden = true; };
+$("rstYes").onclick = () => { S.a = new Set(); S.e = new Set(); S.x = new Set(); save(); render(); $("rstNo").onclick(); };
+
+// ---------- Cuenta: guardar en la nube con Firebase (solo en la versión publicada) ----------
+const FB_CONFIG = {"apiKey": "AIzaSyBi5MSzLJGLdy_C3GvkmirQvXzJI_KnbB0", "authDomain": "pensum-industrial.firebaseapp.com", "projectId": "pensum-industrial", "storageBucket": "pensum-industrial.firebasestorage.app", "messagingSenderId": "472661037844", "appId": "1:472661037844:web:69e294faca4bdf8d306801"};
+const FB_V = "10.12.2";
+(function cloud(){
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{}); } catch(e){}
+  if (!FB_CONFIG || location.protocol !== "https:") return;
+  const acct = $("acct"); acct.hidden = false;
+  const load = src => new Promise((ok, ko) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = ko; document.head.appendChild(s); });
+  const base = `https://www.gstatic.com/firebasejs/${FB_V}/`;
+  let auth = null, fs = null, unsub = null, user = null;
+  const ERR = {
+    "auth/invalid-email":"Ese correo no es válido.",
+    "auth/invalid-credential":"Correo o contraseña incorrectos.",
+    "auth/wrong-password":"Correo o contraseña incorrectos.",
+    "auth/user-not-found":"No hay ninguna cuenta con ese correo. Toca “Crear cuenta”.",
+    "auth/email-already-in-use":"Ya existe una cuenta con ese correo. Toca “Entrar”.",
+    "auth/weak-password":"La contraseña debe tener al menos 6 caracteres.",
+    "auth/missing-password":"Escribe tu contraseña.",
+    "auth/too-many-requests":"Demasiados intentos. Espera unos minutos y vuelve a probar.",
+    "auth/network-request-failed":"No hay conexión a internet.",
+    "auth/popup-closed-by-user":"Cerraste la ventana de Google antes de terminar.",
+    "auth/popup-blocked":"El teléfono bloqueó la ventana de Google. Usa correo y contraseña.",
+    "auth/operation-not-supported-in-this-environment":"Google no funciona dentro de la app instalada en este teléfono. Usa correo y contraseña.",
+    "auth/unauthorized-domain":"Este sitio todavía no está autorizado en Firebase."
+  };
+  const say = (t, ok) => { const m = $("acMsg"); m.className = "msg " + (ok ? "ok" : "bad"); m.textContent = t; };
+  const errMsg = e => ERR[e && e.code] || "No se pudo completar. Inténtalo otra vez.";
+  const sheet = $("acSheet");
+  const open = () => { sheet.hidden = false; $("acMsg").textContent = ""; renderAcct(); };
+  const close = () => { sheet.hidden = true; };
+  $("acBtn").onclick = open; $("acClose").onclick = close;
+  sheet.addEventListener("click", e => { if (e.target === sheet) close(); });
+  function renderAcct(){
+    $("acOut").hidden = !!user; $("acIn").hidden = !user;
+    $("acBtn").textContent = user ? "Mi cuenta" : "Guardar en la nube";
+    if (user) $("acWho").textContent = user.email || "tu cuenta de Google";
+  }
+  async function start(){
+    try {
+      await load(base + "firebase-app-compat.js");
+      await Promise.all([load(base + "firebase-auth-compat.js"), load(base + "firebase-firestore-compat.js")]);
+    } catch(e){ $("acBtn").disabled = true; $("acBtn").textContent = "Sin conexión"; return; }
+    firebase.initializeApp(FB_CONFIG);
+    auth = firebase.auth(); fs = firebase.firestore();
+    auth.languageCode = "es";
+    auth.onAuthStateChanged(async u => {
+      user = u; renderAcct();
+      if (unsub){ unsub(); unsub = null; }
+      if (!u){ dbRef = null; setSync(""); return; }
+      const ref = fs.collection("progreso").doc(u.uid);
+      setSync("Conectando con tu cuenta…");
+      try {
+        const snap = await ref.get();
+        const d = snap.exists ? snap.data() : null;
+        if (d && (d.t||0) > (S.t||0)){ applyRaw(d); try{ localStorage.setItem(LS, JSON.stringify(raw())); }catch(e){} render(); }
+        else if (S.t) { await ref.set(raw()); }
+        dbRef = ref;
+        setSync("Guardado en la nube con " + (u.email || "tu cuenta") + ". Aparece en cualquier teléfono donde inicies sesión.");
+        unsub = ref.onSnapshot(s => { if (s.metadata.hasPendingWrites || !s.exists) return; const c = s.data();
+          if ((c.t||0) > (S.t||0)){ applyRaw(c); try{ localStorage.setItem(LS, JSON.stringify(raw())); }catch(e){} render(); } }, () => {});
+      } catch(e){ setSync("No se pudo conectar con tu cuenta. Tu progreso sigue guardado en este teléfono."); }
+    });
+  }
+  $("acGoogle").onclick = async () => {
+    try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); say("Listo, ya iniciaste sesión.", true); setTimeout(close, 900); }
+    catch(e){ say(errMsg(e)); }
+  };
+  const creds = () => [$("acEmail").value.trim(), $("acPass").value];
+  $("acLogin").onclick = async () => { const [e,p] = creds();
+    try { await auth.signInWithEmailAndPassword(e,p); say("Listo, ya iniciaste sesión.", true); setTimeout(close, 900); } catch(err){ say(errMsg(err)); } };
+  $("acSignup").onclick = async () => { const [e,p] = creds();
+    try { await auth.createUserWithEmailAndPassword(e,p); say("Cuenta creada. Tus materias ya se guardan en la nube.", true); setTimeout(close, 1200); } catch(err){ say(errMsg(err)); } };
+  $("acReset").onclick = async () => { const [e] = creds();
+    if (!e) return say("Escribe tu correo arriba y vuelve a tocar aquí.");
+    try { await auth.sendPasswordResetEmail(e); say("Te enviamos un correo para cambiar la contraseña. Revisa también la carpeta de spam.", true); } catch(err){ say(errMsg(err)); } };
+  $("acEye").onclick = () => { const i = $("acPass"), show = i.type === "password";
+    i.type = show ? "text" : "password"; $("acEye").setAttribute("aria-pressed", show);
+    $("acEye").setAttribute("aria-label", show ? "Ocultar contraseña" : "Mostrar contraseña"); $("acEyeT").textContent = show ? "Ocultar" : "Ver"; };
+  $("acLogout").onclick = async () => { await auth.signOut(); say("Cerraste sesión. Tus materias siguen en este teléfono.", true); };
+  start();
+})();
+
+// ---------- inicio ----------
+loadLocal(); render(); show(location.hash.slice(1));
+
+// Sincronización con la cuenta de Claude (solo dentro de Claude)
+(async () => {
+  try {
+    if (!window.claude || !window.claude.use) return;
+    const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+    if (!db || !user) return;
+    const id = await user.id(); if (!id) return;
+    const ref = db.doc("data/users/" + id + "/progreso");
+    const snap = await ref.get();
+    if (snap.exists){ const d = snap.data(); if ((d.t||0) > (S.t||0)){ applyRaw(d); try{ localStorage.setItem(LS, JSON.stringify(raw())); }catch(e){} render(); } }
+    dbRef = ref; setSync(true);
+    if (!snap.exists && S.a.size) { dbBusy = dbBusy.then(()=>ref.set(raw())).catch(()=>{}); }
+  } catch(e) {}
+})();
+
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+// Fondo: plano técnico (cuadrícula) con engranajes turquesa que giran engranados entre sí
+(function(){
+  const cv = document.getElementById("bg"); if (!cv || !cv.getContext) return;
+  const ctx = cv.getContext("2d");
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const TAU = Math.PI*2;
+  let W=0,H=0,dpr=1,M=7,base=null,gears=[],t=0,last=0,raf=0;
+  function shape(N){
+    const r = M*N/2, ro = r + M, rf = r - 1.25*M, p = TAU/N, out = new Path2D();
+    for (let i=0;i<N;i++){ const a = i*p;
+      [[rf,a-p*.5],[rf,a-p*.28],[ro,a-p*.13],[ro,a+p*.13],[rf,a+p*.28]].forEach(([rr,aa],j)=>{
+        const x = rr*Math.cos(aa), y = rr*Math.sin(aa); (i===0&&j===0) ? out.moveTo(x,y) : out.lineTo(x,y); }); }
+    out.closePath();
+    const hubR = Math.max(M*1.5, r*.2), rimR = rf - M*1.3, inner = new Path2D();
+    inner.arc(0,0,hubR,0,TAU); inner.moveTo(M*.6,0); inner.arc(0,0,M*.6,0,TAU);
+    if (N >= 18){ inner.moveTo(rimR,0); inner.arc(0,0,rimR,0,TAU);
+      for (let k=0;k<5;k++){ const a = k*TAU/5; inner.moveTo(hubR*Math.cos(a),hubR*Math.sin(a)); inner.lineTo(rimR*Math.cos(a),rimR*Math.sin(a)); } }
+    return {out, inner};
+  }
+  // cadena de engranajes: cada uno engrana con el anterior en el ángulo indicado
+  function chain(x, y, ns, dirs, w0, alpha){
+    let g = {x, y, N:ns[0], ph:Math.random()*TAU, w:w0, alpha}; const out = [g];
+    for (let i=1;i<ns.length;i++){
+      const N = ns[i], d = M*(g.N+N)/2, b = dirs[i-1], p1 = TAU/g.N, p2 = TAU/N;
+      const n = {x:g.x+d*Math.cos(b), y:g.y+d*Math.sin(b), N, w:-g.w*g.N/N, alpha};
+      n.ph = b + Math.PI - p2*(.5 - (b-g.ph)/p1);
+      out.push(n); g = n;
+    }
+    return out;
+  }
+  function build(){
+    dpr = Math.min(2, window.devicePixelRatio||1);
+    W = innerWidth; H = innerHeight; cv.width = W*dpr; cv.height = H*dpr;
+    M = W < 640 ? 6 : 8;
+    base = document.createElement("canvas"); base.width = cv.width; base.height = cv.height;
+    const b = base.getContext("2d"); b.scale(dpr,dpr);
+    const g = b.createRadialGradient(W*.5,H*.12,0,W*.5,H*.12,Math.max(W,H)*.95);
+    g.addColorStop(0,"#071820"); g.addColorStop(1,"#03080B"); b.fillStyle = g; b.fillRect(0,0,W,H);
+    const C = 22;
+    for (let x=0, i=0; x<=W; x+=C, i++){ b.fillStyle = i%5 ? "rgba(52,205,232,.035)" : "rgba(52,205,232,.075)"; b.fillRect(Math.round(x),0,1,H); }
+    for (let y=0, i=0; y<=H; y+=C, i++){ b.fillStyle = i%5 ? "rgba(52,205,232,.035)" : "rgba(52,205,232,.075)"; b.fillRect(0,Math.round(y),W,1); }
+    gears = [
+      ...chain(W-24, 64, [34,16,22], [2.35, 1.95], .11, .20),
+      ...chain(18, H-34, [40,18,12], [-.62, -1.25], -.07, .16),
+      ...chain(W+14, H*.6, [26,14], [3.38], .085, .13),
+    ];
+    const cache = {}; gears.forEach(q => q.sh = cache[q.N] || (cache[q.N] = shape(q.N)));
+    draw();
+  }
+  function draw(){
+    ctx.setTransform(1,0,0,1,0,0); ctx.drawImage(base,0,0);
+    gears.forEach(q => {
+      ctx.setTransform(dpr,0,0,dpr,0,0); ctx.translate(q.x,q.y); ctx.rotate(q.ph + q.w*t);
+      ctx.fillStyle = `rgba(52,205,232,${q.alpha*.18})`; ctx.fill(q.sh.out);
+      ctx.lineWidth = 1.3; ctx.strokeStyle = `rgba(52,205,232,${q.alpha})`; ctx.stroke(q.sh.out);
+      ctx.lineWidth = 1; ctx.strokeStyle = `rgba(52,205,232,${q.alpha*.7})`; ctx.stroke(q.sh.inner);
+    });
+  }
+  function loop(now){ const dt = Math.min(.05,(now-last)/1000||0); last = now;
+    if (now-(loop.f||0) > 33){ loop.f = now; t += dt; draw(); } else t += dt;
+    raf = requestAnimationFrame(loop); }
+  let rt; addEventListener("resize",()=>{ clearTimeout(rt); rt=setTimeout(()=>{ if (Math.abs(innerWidth-W)>40||Math.abs(innerHeight-H)>120) build(); },200); });
+  document.addEventListener("visibilitychange",()=>{ if (document.hidden) cancelAnimationFrame(raf); else if (!reduce){ last=performance.now(); raf=requestAnimationFrame(loop); } });
+  build(); if (!reduce) raf = requestAnimationFrame(loop);
+})();
+
+</script>
+
+</body>
+</html>
